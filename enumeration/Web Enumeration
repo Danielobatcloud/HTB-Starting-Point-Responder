@@ -1,0 +1,12 @@
+echo "10.129.172.181 unika.htb" >> /etc/hosts
+
+sudo nano /etc/hosts
+127.0.0.1       localhost
+127.0.1.1       kali
+::1             localhost ip6-localhost ip6-loopback
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+
+10.129.147.74   thetoppers.htb
+10.129.147.74   s3.thetoppers.htb
+10.129.172.181 unika.htb

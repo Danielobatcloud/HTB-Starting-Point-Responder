@@ -1,0 +1,36 @@
+git clone https://github.com/lgandx/Responder
+Cloning into 'Responder'...
+remote: Enumerating objects: 2791, done.
+remote: Counting objects: 100% (1644/1644), done.
+remote: Compressing objects: 100% (452/452), done.
+remote: Total 2791 (delta 1225), reused 1193 (delta 1192), pack-reused 1147 (from 1)
+Receiving objects: 100% (2791/2791), 2.70 MiB | 733.00 KiB/s, done.
+Resolving deltas: 100% (1802/1802), done.
+
+cat Responder.conf
+[Responder Core]
+
+; Poisoners to start
+MDNS  = On
+LLMNR = On
+NBTNS = On
+
+#IPv6 conf:
+DHCPv6 = Off
+
+; Servers to start
+SQL      = On
+SMB      = On
+QUIC     = On
+RDP      = On
+Kerberos = On
+FTP      = On
+POP      = On
+SMTP     = On
+IMAP     = On
+
+[HTTPS Server]
+
+; Configure SSL Certificates to use
+SSLCert = certs/responder.crt
+SSLKey = certs/responder.key

