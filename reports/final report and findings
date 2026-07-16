@@ -1,272 +1,63 @@
-# Penetration Test Report
+Penetration Testing Report
+Hack The Box – Starting Point: Responder
 
-## Target: Crocodile (HackTheBox — Starting Point, Tier 1)
+Tester: Daniel Obat
+Assessment Type: Internal Network Penetration Test
+Target: HTB Starting Point – Responder
+Date: July 2026
 
----
+Executive Summary
 
-### Document Control
+A security assessment was conducted on the Hack The Box – Responder machine to identify vulnerabilities within a simulated Windows network. The assessment revealed that the environment was vulnerable to LLMNR/NBT-NS Poisoning, allowing NTLMv2 authentication hashes to be captured. The captured credentials were successfully cracked offline due to a weak password, demonstrating the risk of credential theft and unauthorized access.
 
-| Field | Detail |
-|---|---|
-| Report Title | Infrastructure & Web Application Penetration Test — Crocodile |
-| Target | HackTheBox Machine "Crocodile" |
-| Target IP | `10.129.172.181` |
-| Assessor | Obatuyise Daniel |
-| Date | 12/04/2026 |
-| Classification | Confidential — For Educational Purposes |
-| Status | Completed |
+Overall Risk Rating: High
 
----
+Findings
+1. LLMNR/NBT-NS Poisoning
 
-## 1. Executive Summary
+Severity: High
 
-A penetration test was conducted against the "Crocodile" host as part of the HackTheBox
-Starting Point series. The engagement identified two exposed services — FTP (port 21) and
-HTTP (port 80) — hosting a business website with an administrative login portal.
+Description:
+The target allowed LLMNR and NBT-NS name resolution, enabling an attacker to use Responder to capture NTLMv2 authentication hashes from network traffic.
 
-Testing revealed that the FTP service was misconfigured to permit **anonymous authentication**,
-exposing files containing a list of usernames and their corresponding plaintext passwords.
-These credentials were reused on the web application's administrative login page
-(`login.php`), resulting in **unauthorized access to a privileged administrative dashboard**.
+Impact:
 
-This engagement demonstrates a common real-world attack chain: a low-severity misconfiguration
-(anonymous FTP) directly enabling a critical impact (full admin panel compromise) due to
-credential reuse and lack of service segmentation.
+Credential theft
+Unauthorized network access
+Potential lateral movement
 
-**Overall Risk Rating: Critical**
+Remediation:
 
-| Metric | Result |
-|---|---|
-| Hosts Tested | 1 |
-| Open Services | 2 (FTP – port 21, HTTP – port 80) |
-| Vulnerabilities Identified | 2 |
-| Critical Findings | 1 |
-| Medium Findings | 1 |
-| Objective Achieved | Yes — admin panel accessed, flag retrieved |
+Disable LLMNR and NetBIOS over TCP/IP.
+Enable SMB signing.
+Monitor for spoofing attacks on the network.
+2. Weak Password Policy
 
----
+Severity: High
 
-## 2. Scope
+Description:
+The captured NTLMv2 hash was successfully cracked using a dictionary attack, indicating the use of a weak password.
 
-- **In Scope:** `10.129.172.181` (TCP ports 21/FTP and 80/HTTP)
-- **Objective:** Identify and exploit vulnerabilities to gain unauthorized access to the web
-  application and capture the assessment flag.
-- **Methodology:** Black-box testing, no credentials or source code provided prior to
-  engagement.
+Impact:
 
----
+Account compromise
+Increased risk of privilege escalation
 
-## 3. Findings Summary
+Remediation:
 
-| ID | Finding | Severity | CWE |
-|----|---------|----------|-----|
-| F-01 | Anonymous FTP Access Exposing Sensitive Files | Medium | CWE-287 |
-| F-02 | Credential Reuse Leading to Administrative Panel Compromise | Critical | CWE-522 / CWE-798 |
+Enforce strong password complexity requirements.
+Implement Multi-Factor Authentication (MFA).
+Configure account lockout policies.
+Conduct regular password audits.
 
----
+Tools Used
 
-## 4. Technical Findings
+Nmap
+Responder
+John the Ripper
+Kali Linux
+Conclusion
 
-### F-01: Anonymous FTP Access Exposing Sensitive Files (Medium)
+The assessment demonstrated that insecure legacy name resolution protocols and weak passwords can lead to credential compromise in Windows environments. Disabling LLMNR/NBT-NS, enforcing strong authentication policies, and implementing modern security controls will significantly reduce the risk of similar attacks.
 
-**Description**
-
-The FTP service running on port 21 (vsFTPd) was configured to allow anonymous authentication.
-This permitted any unauthenticated user to connect to the server and browse/download its
-contents without providing valid credentials.
-
-**Affected Component**
-
-- FTP service on `10.129.172.181:21` (vsFTPd)
-
-**Steps to Reproduce**
-
-1. Performed service enumeration with Nmap using default scripts:
-
-   ```bash
-   nmap -sC -sV -p21,80 <target-ip>
-   ```
-
-2. Nmap's `ftp-anon` script confirmed anonymous login was permitted (FTP response code 230)
-   and enumerated two files present in the FTP root directory:
-   - `allowed.userlist`
-   - `allowed.userlist.passwd`
-
-3. Connected to the FTP service manually and authenticated using the `anonymous` username with
-   a blank/arbitrary password:
-
-   ```bash
-   ftp <target-ip>
-   Name: anonymous
-   Password: <blank>
-   ```
-
-4. Listed the directory contents and downloaded both files using the `get` command:
-
-   ```
-   ftp> dir
-   ftp> get allowed.userlist
-   ftp> get allowed.userlist.passwd
-   ```
-
-5. Inspected the downloaded files locally and confirmed they contained a list of usernames
-   (including a higher-privilege account, `admin`) and their corresponding plaintext passwords.
-
-**Evidence**
-
-- Nmap script output confirming `ftp-anon: Anonymous FTP login allowed (FTP code 230)`.
-- Directory listing showing `allowed.userlist` and `allowed.userlist.passwd`.
-- Terminal capture of file contents after download.
-
-
-
-**Impact**
-
-Anonymous access to the FTP service allowed an unauthenticated attacker to retrieve sensitive
-files never intended for public exposure. In this case, the exposed files directly contained
-authentication material for the organization's web application, escalating what might
-otherwise be a low-severity misconfiguration into a critical entry point.
-
-**Root Cause**
-
-The FTP service was configured with anonymous login enabled and sensitive credential files
-were stored in a location accessible to anonymous/unauthenticated FTP sessions.
-
-**Remediation**
-
-1. Disable anonymous FTP authentication unless explicitly required for a defined public
-   use case.
-2. Never store credentials, configuration files, or other sensitive data on services with
-   broad or anonymous access.
-3. Apply the principle of least privilege to file server directories and permissions.
-4. Migrate to an encrypted, authenticated file transfer protocol (e.g., SFTP/FTPS) where file
-   transfer is required.
-5. Periodically audit externally facing services for unnecessary anonymous/guest access.
-
-**Risk Rating Justification**
-
-Rated **Medium** in isolation, as anonymous read access alone does not guarantee compromise;
-however, this finding was the initial foothold that enabled the critical finding below.
-
----
-
-### F-02: Credential Reuse Leading to Administrative Panel Compromise (Critical)
-
-**Description**
-
-Directory enumeration of the web application identified an administrative login page
-(`login.php`). The credentials for the `admin` account, obtained from the plaintext password
-file retrieved via anonymous FTP access (F-01), were valid for this login form, granting full
-access to a privileged administrative dashboard.
-
-**Affected Component**
-
-- Web application login endpoint: `http://<target-ip>/login.php`
-
-**Steps to Reproduce**
-
-1. Performed content discovery against the web root using gobuster:
-
-   ```bash
-   gobuster dir -u http://<target-ip>/ -w /usr/share/wordlists/dirb/common.txt -x php
-   ```
-
-2. Identified the endpoint `/login.php`, presenting an administrative authentication form.
-3. Cross-referenced the `admin` username (identified in `allowed.userlist`, F-01) with its
-   corresponding plaintext password from `allowed.userlist.passwd`.
-4. Submitted the recovered credentials (`admin` / `<recovered-password>`) to `login.php`.
-5. Authentication succeeded, granting access to an administrative "Server Manager" style
-   dashboard, where the target flag was located and retrieved.
-
-**Evidence**
-
-- Gobuster output identifying `login.php`.
-- Screenshot of the login form.
-- Screenshot of the authenticated administrative dashboard following successful login.
-
-*(Insert supporting screenshots here when publishing to your repo.)*
-
-**Impact**
-
-Full compromise of the administrative interface of the web application. An attacker with this
-level of access could potentially modify site content, access sensitive business data, pivot
-to further attacks against the underlying host, or use the platform to stage additional
-attacks such as web shell uploads, depending on the dashboard's functionality.
-
-**Root Cause**
-
-- Plaintext storage of credentials in a file accessible via a misconfigured service (F-01).
-- Reuse of the same credentials across the FTP environment and the web application's
-  administrative interface.
-- No multi-factor authentication or account lockout mechanism observed on the login form.
-
-**Remediation**
-
-1. Store credentials using strong, salted password hashing (e.g., bcrypt/Argon2) — never in
-   plaintext, regardless of the storage location.
-2. Enforce unique credentials per service/system; prohibit credential reuse across
-   environments.
-3. Implement account lockout, rate limiting, and/or CAPTCHA on the administrative login form
-   to mitigate brute-force and credential-stuffing attempts.
-4. Enable multi-factor authentication for all administrative accounts.
-5. Restrict access to administrative interfaces via network-level controls (e.g., IP
-   allow-listing, VPN-only access) in addition to application-level authentication.
-6. Conduct regular credential and secrets audits across all exposed services.
-
-**Risk Rating Justification**
-
-Rated **Critical** due to full compromise of an administrative interface, resulting directly
-from a straightforward, low-skill attack chain (anonymous file access → credential harvesting
-→ authenticated admin access) with no advanced exploitation techniques required.
-
----
-
-## 5. Attack Chain Summary
-
-```
-[1] Anonymous FTP login (port 21)
-        │
-        ▼
-[2] Download allowed.userlist + allowed.userlist.passwd
-        │
-        ▼
-[3] Identify privileged "admin" account + plaintext password
-        │
-        ▼
-[4] Discover /login.php via directory brute-forcing
-        │
-        ▼
-[5] Authenticate as admin → full administrative dashboard access
-        │
-        ▼
-[6] Flag retrieved
-```
-
-This chain illustrates how a single low-friction misconfiguration (anonymous FTP) can cascade
-into full administrative compromise when combined with poor credential hygiene.
-
----
-
-## 6. Conclusion
-
-The assessment successfully demonstrated that misconfigured anonymous FTP access, combined with
-plaintext credential storage and credential reuse, allowed an unauthenticated attacker to gain
-full administrative access to the target web application. Neither finding required advanced
-tooling or exploitation skill — both were identified through standard reconnaissance and
-enumeration practices, underscoring the real-world risk posed by basic service
-misconfigurations. No further vulnerabilities were in scope for this engagement.
-
----
-
-## 7. Tools Used
-
-- `nmap` — service/port enumeration and script scanning (`ftp-anon`)
-- `ftp` (CLI client) — anonymous FTP session and file retrieval
-- `gobuster` — web content/directory discovery
-- Web browser — manual authentication testing
-
----
-
-*This report documents a completed exercise on the HackTheBox Starting Point machine
-"Crocodile," created for personal portfolio/educational purposes. Flag values are omitted in
-accordance with HackTheBox's write-up guidelines.*
+Disclaimer: This assessment was performed in an authorized Hack The Box training environment for educational purposes only.
